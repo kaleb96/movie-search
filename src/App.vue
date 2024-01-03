@@ -1,88 +1,97 @@
 <template>
   <v-app>
     <v-app-bar>
-        <v-container>
-          <v-card>
-            <div>Rodden Potatoes</div>
-          </v-card>
-        </v-container>
-
-      <v-card class="search">
-              <input v-model.trim="search" type="text" placeholder="Search Movies...">
-              <v-btn @click="fetchMovies">Search</v-btn>
-      </v-card>
+      <v-container>
+          <v-row
+            class="mt-4"
+          >
+            <v-col cols="4"
+            >
+              <div class="custom-icon-container"></div>
+              <v-sheet class="text-h4 font-italic font-weight-black">Rodden Potatoes</v-sheet>
+            </v-col>
+            <v-col cols="6">
+              <v-sheet>
+                <v-text-field
+                  label="Search...in English"
+                  variant="underlined"
+                  v-model.trim="search"
+                  append-inner-icon="mdi-magnify"
+                  @click:append-inner="fetchMovies"
+                  clear-icon="mdi-close-circle"
+                  clearable
+                ></v-text-field>
+              </v-sheet>
+            </v-col>
+          </v-row>
+      </v-container>
     </v-app-bar>
 
-    <v-navigation-drawer>
-        <div class="movies" @click="getMovieList">Various Movies</div>
+    <v-navigation-drawer
+      floating
+      permanent
+      class="bg-yellow-lighten-4"
+    >
+      <v-list>
+        <v-list-item
+          title="Various Movies"
+          value="various movies"
+          @click="getMovieList"
+        > </v-list-item>
+      </v-list>
     </v-navigation-drawer>
 
     <v-main>
-        <v-container>
-            <v-card v-if="searchResult.Title">
-                <img :src="searchResult.Poster">
-                <p>{{ searchResult.Title }}</p>
-                <p>Director | {{ searchResult.Director }}</p>
-                <p>Released | {{ searchResult.Released }}</p>
-                <p>{{ searchResult.Genre }} | {{ searchResult.Runtime }}</p>
-                <p>Cast | {{ searchResult.Actors }}</p>
-                <p v-for="(rating, idx) in searchResult.Ratings" :key="idx">
-                  {{ rating.Source }} | {{ rating.Value }} <br>
-                </p>
-              </v-card>
-        </v-container>
-
-
-
-        <v-container>
+      <v-container v-if="searchResult.Title">
           <v-row align="center" justify="center">
-            <v-col
-              v-for="movieInfo in tmpLists"
-              :key="movieInfo.Poster"
-              cols="auto"
-            >
+            <v-col cols="12">
               <v-card
                 class="mx-auto"
-                max-width="344"
-                :variant="movieInfo"
+                max-width="1200"
               >
                 <v-card-item>
                   <div>
-                    <img :src="movieInfo.Poster">
-                    <div class="text-h4">{{ movieInfo.Title }}</div>
+                    <img :src="searchResult.Poster">
+                    <div class="text-h5">{{ searchResult.Title }}</div>
+                    <div class="text-h6">Director | {{ searchResult.Director }}</div>
+                    <div class="text-h6">Released | {{ searchResult.Released }}</div>
+                    <div class="text-h6">{{ searchResult.Genre }} | {{ searchResult.Runtime }}</div>
+                    <div class="text-h6">Cast | {{ searchResult.Actors }}</div>
+                    <div v-for="(rating, idx) in searchResult.Ratings" :key="idx">
+                      {{ rating.Source }} | {{ rating.Value }} <br>
+                    </div>
                   </div>
                 </v-card-item>
               </v-card>
             </v-col>
+
           </v-row>
-
-          <!-- <v-card
-            :title="movieInfo.Title"
-            subtitle="Subtitle"
-            variant="tonal"
-            v-for="movieInfo in tmpLists" :key="movieInfo.Poster"
+      </v-container>
+      <v-container v>
+        <v-row justify="center">
+          <v-col
+            v-for="movieInfo in tmpLists"
+            :key="movieInfo.Poster"
+            cols="auto"
+          >
+            <v-card
+              class="mx-auto"
+              max-width="344"
+              :variant="movieInfo"
             >
-            <img :src="movieInfo.Poster">
-          </v-card> -->
-
-
-
-        </v-container>
-          <!-- <v-card class=text-center>
-
-              <p v-for="movieInfo in tmpLists" :key="movieInfo.Poster" >
+              <v-card-item
+              >
+                <div>
                   <img :src="movieInfo.Poster">
-                  <p>{{ movieInfo.Title }}</p>
-              </p>
-            </v-card> -->
-
-            <v-btn v-for="page in totalPage" :key="page" @click="checkPage(page)">{{ page }}</v-btn>
-            <v-btn>totalItems : {{ totalItems }}</v-btn>
-
+                  <div class="text-h4">{{ movieInfo.Title }}</div>
+                </div>
+              </v-card-item>
+            </v-card>
+          </v-col>
+        </v-row>
+      </v-container>
+      <v-btn v-for="page in totalPage" :key="page" @click="checkPage(page)">{{ page }}</v-btn>
       </v-main>
-
-      <v-footer></v-footer>
-
  </v-app>
 </template>
 
@@ -100,19 +109,13 @@ const allUrlList = ref([]);
 const allMovieLists = ref([]);
 const items = 10;
 const currentPage = ref(1);
-const totalItems = computed(() => {
-  return allMovieLists.value.length;
-});
-
 const totalPage = computed(() => {
   return Math.ceil(allMovieLists.value.length/items);
 });
 
-
 const checkPage = (page) => {
   currentPage.value = page;
 }
-
 
 /* watch and update allMovieLists each pages */
 const tmpLists = computed(() => {
@@ -238,11 +241,13 @@ const fechData = async(url) => {
 </script>
 
 <style scoped>
-  .text-center {
-    display: flex;
-    flex-wrap: wrap;
-
+  .custom-icon-container {
+    background-image: url('@/assets/potatos.png');
+    background-size: contain;
+    width: 24px; /* 아이콘의 폭에 맞게 조절 */
+    height: 24px; /* 아이콘의 높이에 맞게 조절 */
+    display: inline-block;
+    margin-right: 8px; /* 원하는 여백 설정 */
   }
-
 
 </style>
